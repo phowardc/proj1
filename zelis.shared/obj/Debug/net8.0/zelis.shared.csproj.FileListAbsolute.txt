@@ -1,0 +1,11 @@
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/bin/Debug/net8.0/zelis.shared.deps.json
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/bin/Debug/net8.0/zelis.shared.dll
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/bin/Debug/net8.0/zelis.shared.pdb
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/obj/Debug/net8.0/zelis.shared.GeneratedMSBuildEditorConfig.editorconfig
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/obj/Debug/net8.0/zelis.shared.AssemblyInfoInputs.cache
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/obj/Debug/net8.0/zelis.shared.AssemblyInfo.cs
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/obj/Debug/net8.0/zelis.shared.csproj.CoreCompileInputs.cache
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/obj/Debug/net8.0/zelis.shared.dll
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/obj/Debug/net8.0/refint/zelis.shared.dll
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/obj/Debug/net8.0/zelis.shared.pdb
+/Users/yorkmacbook082/Documents/SoloProj/zelis.shared/obj/Debug/net8.0/ref/zelis.shared.dll

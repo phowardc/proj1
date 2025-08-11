@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: zelis-sql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=SqlDocker!2025
+    ports:
+      - "1433:1433"
+  
+  api:
+    build:
+      context: .
+      dockerfile: zelis.Api/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__Sql=Server=sqlserver,1433;Database=ZelisPaymentsDb;User Id=sa;Password=SqlDocker!2025;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+
+  ui:
+    build:
+      context: .
+      dockerfile: zelis.UI/Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5001
+    depends_on:
+      - api
