@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("zelis.shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0ff9cf61c88080bdb5ee744dfbbb6f5f71b5f7f1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5cefec63afeec23ddc7123f5e6e164ae6f87e2b9")]
 [assembly: System.Reflection.AssemblyProductAttribute("zelis.shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("zelis.shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

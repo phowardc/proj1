@@ -1,9 +1,12 @@
 @page "/commtype"
 @rendermode InteractiveServer
 @using System.Net.Http.Json
+@using zelis.Shared.Dtos
 @inject HttpClient Http
 
 <h3>Create Communication Type</h3>
+
+<p role="status">@status</p>
 
 <div style="margin-bottom:8px">
   <label>Type Code</label><br />
@@ -15,44 +18,168 @@
   <input @bind="displayName" />
 </div>
 
-<button @onclick="CreateAsync">Create</button>
+<!--checkboxes-->
+<fieldset style="margin-bottom:12px">
+  <legend>Allowed Statuses (@selectedStatusCodes.Count selected)</legend>
 
-@if (!string.IsNullOrWhiteSpace(status))
+  @foreach (var s in statusCatalog)
+  {
+    <label style="display:block; margin:2px 0">
+      <input type="checkbox"
+             checked="@selectedStatusCodes.Contains(s.Code)"
+             @onchange="args => ToggleStatus(s.Code, (bool)args.Value!)" />
+      @s.Label (@s.Code)
+    </label>
+  }
+</fieldset>
+
+<button type="button" @onclick="CreateAsync" disabled="@isSubmitting">
+  @(isSubmitting ? "Posting..." : "Create")
+</button>
+
+<hr />
+
+<h4>Existing Communication Types</h4>
+
+@if (isLoading)
 {
-  <p style="margin-top:8px">@status</p>
+  <p>Loading...</p>
+}
+else if (loadError is not null)
+{
+  <p style="color:red">Failed to load: @loadError</p>
+}
+else if (types is { Count: > 0 })
+{
+  <table class="table">
+    <thead>
+      <tr>
+        <th>TypeCode</th>
+        <th>DisplayName</th>
+        <th># Allowed Statuses</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var t in types)
+      {
+        <tr>
+          <td>@t.TypeCode</td>
+          <td>@t.DisplayName</td>
+          <td>@(t.AllowedStatuses?.Count ?? 0)</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+else
+{
+  <p>No types yet.</p>
 }
 
 @code {
   private string typeCode = "";
   private string displayName = "";
-  private string status = "";
+  private string status = "idle";
 
+  private List<CommunicationTypeDto>? types;
+  private bool isLoading = true;
+  private string? loadError;
+  private bool isSubmitting = false;
+
+  private readonly List<(string Code, string Label)> statusCatalog = new()
+  {
+    ("sent", "Thing was Sent"),
+    ("failed", "Thing failed"),
+    ("delivered", "Thing was Delievered"),
+    ("undelivered", "Thing was Undelivered")
+  };
+
+  private HashSet<string> selectedStatusCodes = new(StringComparer.OrdinalIgnoreCase);
+
+  protected override async Task OnInitializedAsync()
+  {
+    await LoadTypesAsync();
+  }
+
+  private void ToggleStatus(string code, bool isChecked)
+  {
+    if (isChecked) selectedStatusCodes.Add(code);
+    else selectedStatusCodes.Remove(code);
+  }
+//get method
+  private async Task LoadTypesAsync()
+  {
+    isLoading = true;
+    loadError = null;
+    status = "loading…";
+    try
+    {
+      types = await Http.GetFromJsonAsync<List<CommunicationTypeDto>>("api/CommunicationType");
+      types ??= new();
+      status = $"loaded {types.Count} type(s)";
+    }
+    catch (Exception ex)
+    {
+      loadError = ex.Message;
+      types = new();
+      status = "load failed";
+    }
+    finally
+    {
+      isLoading = false;
+    }
+  }
+//post method
   private async Task CreateAsync()
   {
-    // minimal payload your controller expects
+    if (isSubmitting) return;
+    isSubmitting = true;
+    status = "posting…";
+
+    var allowed = selectedStatusCodes
+    .Select(code =>
+    {
+        var label = statusCatalog.First(s => s.Code == code).Label;
+        return new
+        {
+            TypeCode = (typeCode?.Trim() ?? ""),
+            StatusCode = code,
+            Description = label
+        };
+    })
+    .ToList();
+
+
     var payload = new
     {
       TypeCode = typeCode?.Trim() ?? "",
       DisplayName = displayName?.Trim() ?? "",
-      AllowedStatuses = Array.Empty<object>() // empty list is fine
+      AllowedStatuses = allowed
     };
 
     try
     {
-      status = "Posting…";
       var resp = await Http.PostAsJsonAsync("api/CommunicationType", payload);
       var body = await resp.Content.ReadAsStringAsync();
-      status = $"HTTP {(int)resp.StatusCode} {resp.StatusCode}" + (string.IsNullOrWhiteSpace(body) ? "" : $" — {body}");
+
+      status = $"HTTP {(int)resp.StatusCode} {resp.StatusCode}"
+             + (string.IsNullOrWhiteSpace(body) ? "" : $" — {body}");
 
       if (resp.IsSuccessStatusCode)
       {
         typeCode = "";
         displayName = "";
+        selectedStatusCodes.Clear();
+        await LoadTypesAsync();
       }
     }
     catch (Exception ex)
     {
       status = "EXCEPTION: " + ex.Message;
+    }
+    finally
+    {
+      isSubmitting = false;
     }
   }
 }

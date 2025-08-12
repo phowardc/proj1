@@ -8,8 +8,8 @@ POST {{API_HostAddress}}/api/CommunicationType
 Content-Type: application/json
 
 {
-    "TypeCode": "SSS",
-    "DisplayName": "Message",
+    "TypeCode": "ZZZ",
+    "DisplayName": "Zidane Zebra Zoo",
     "AllowedStatuses": [
     {
       "statusCode": "DRAFT",
