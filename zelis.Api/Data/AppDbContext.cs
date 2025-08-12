@@ -93,9 +93,9 @@ namespace zelis.Api.Data
                  .HasForeignKey(h => h.CommunicationId)
                  .OnDelete(DeleteBehavior.Cascade);
             });
-            // =====================
-            // Seed Data
-            // =====================
+
+            // _______Seed Data______
+
             modelBuilder.Entity<CommunicationType>().HasData(
                 new CommunicationType { TypeCode = "email", DisplayName = "Email" },
                 new CommunicationType { TypeCode = "sms", DisplayName = "SMS" }

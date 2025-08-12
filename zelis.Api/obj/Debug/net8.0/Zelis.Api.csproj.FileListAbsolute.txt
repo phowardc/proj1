@@ -145,3 +145,4 @@
 /Users/yorkmacbook082/Documents/SoloProj/zelis.Api/obj/Debug/net8.0/Zelis.Api.pdb
 /Users/yorkmacbook082/Documents/SoloProj/zelis.Api/obj/Debug/net8.0/Zelis.Api.genruntimeconfig.cache
 /Users/yorkmacbook082/Documents/SoloProj/zelis.Api/obj/Debug/net8.0/ref/Zelis.Api.dll
+/Users/yorkmacbook082/Documents/SoloProj/zelis.Api/obj/Debug/net8.0/Zelis.Api.sourcelink.json

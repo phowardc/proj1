@@ -18,68 +18,93 @@ public class CommunicationTypeController : ControllerBase
     public CommunicationTypeController(AppDbContext db)
     {
         _db = db;
-        Console.WriteLine("🟢 CommunicationTypeController constructed");
     }
 
     // GET api/CommunicationType/{typeCode}/exists
     [HttpGet("{typeCode}/exists")]
     public async Task<IActionResult> Exists(string typeCode)
     {
-        Console.WriteLine($"➡️  Exists() called with typeCode='{typeCode}'");
+        Console.WriteLine($"Exists() called with typeCode='{typeCode}'");
         var exists = await _db.CommunicationType
             .AsNoTracking()
             .AnyAsync(t => t.TypeCode == typeCode);
-        Console.WriteLine($"⬅️  Exists() returning {(exists ? 200 : 404)} for '{typeCode}'");
+        Console.WriteLine($"Exists() returning {(exists ? 200 : 404)} for '{typeCode}'");
         return exists ? Ok() : NotFound();
     }
 
     
 
     // GET api/CommunicationType/status-options
-    [HttpGet("status-options")]
-    public ActionResult<IEnumerable<StatusOptionDto>> GetStatusOptions()
-    {
-        Console.WriteLine("➡️  GetStatusOptions() called");
-        var result = Ok(GlobalStatusCatalog.All);
-        Console.WriteLine($"⬅️  GetStatusOptions() returning {GlobalStatusCatalog.All.Length} options");
-        return result;
-    }
+    // [HttpGet("status-options")]
+    // public ActionResult<IEnumerable<StatusOptionDto>> GetStatusOptions()
+    // {
+    //     var result = Ok(GlobalStatusCatalog.All);
+    //     return result;
+    // }
 
-   // GET api/CommunicationType 
-   [HttpGet]
-    public async Task<ActionResult<IEnumerable<CommunicationType>>> GetTypes()
-    {
-        var communicationTypes = await _db.CommunicationType
-            .ToListAsync();
+   // GET api/CommunicationType/huhuhuhu
+//    [HttpGet]
+//     public async Task<ActionResult<IEnumerable<CommunicationType>>> GetTypes()
+//     {
+//         var communicationTypes = await _db.CommunicationType
+//             .ToListAsync();
 
-        var statuses = await _db.CommunicationTypeStatus.AsNoTracking().ToListAsync();
-        var statusList = new List<CommunicationTypeStatus>();
+//         var statuses = await _db.CommunicationTypeStatus.AsNoTracking().ToListAsync();
+//         var statusList = new List<CommunicationTypeStatus>();
 
-        foreach (var t in communicationTypes){
-        t.AllowedStatuses = statuses.Where(s => s.TypeCode == t.TypeCode).ToList();
-        statusList = t.AllowedStatuses;
-        }
+//         foreach (var t in communicationTypes){
+//         t.AllowedStatuses = statuses.Where(s => s.TypeCode == t.TypeCode).ToList();
+//         statusList = t.AllowedStatuses;
+//         }
 
  
 
-        var response = communicationTypes.Select(communicationType => new CommunicationType
-        {
-            TypeCode = communicationType.TypeCode,
-            DisplayName = communicationType.DisplayName,
-            AllowedStatuses = statusList
+//         var response = communicationTypes.Select(communicationType => new CommunicationType
+//         {
+//             TypeCode = communicationType.TypeCode,
+//             DisplayName = communicationType.DisplayName,
+//             AllowedStatuses = statusList
             
-            // communicationType.AllowedStatuses.Select(status => new CommunicationTypeStatus
-            // {
-            //     TypeCode = status.TypeCode,
-            //     Description = status.Description,
-            //     StatusCode = status.StatusCode
-            // }).ToList()
+//             // communicationType.AllowedStatuses.Select(status => new CommunicationTypeStatus
+//             // {
+//             //     TypeCode = status.TypeCode,
+//             //     Description = status.Description,
+//             //     StatusCode = status.StatusCode
+//             // }).ToList()
 
-        });
+//         });
 
-        //Console.WriteLine($"Response {communicationType.AllowedStatuses}");
-        return(Ok(response));
+//         //Console.WriteLine($"Response {communicationType.AllowedStatuses}");
+//         return(Ok(response));
+//     }
+[HttpGet]
+public async Task<ActionResult<IEnumerable<CommunicationType>>> GetTypes()
+{
+    var types = await _db.CommunicationType
+        .AsNoTracking()
+        .ToListAsync();
+
+    var statuses = await _db.CommunicationTypeStatus
+        .AsNoTracking()
+        .ToListAsync();
+
+    foreach (var t in types)
+    {
+        t.AllowedStatuses = statuses
+            .Where(s => s.TypeCode == t.TypeCode)
+            .Select(s => new CommunicationTypeStatus
+            {
+                TypeCode = s.TypeCode,
+                StatusCode = s.StatusCode,
+                Description = s.Description
+            })
+            .ToList();
     }
+
+    return Ok(types);
+}
+
+
 
     // POST api/CommunicationType (simple insert to prove DB writes)
     [HttpPost]
@@ -89,6 +114,14 @@ public class CommunicationTypeController : ControllerBase
         {
             return BadRequest("Body required.");
         }
+
+
+    dto.TypeCode = dto.TypeCode?.Trim() ?? "";
+    dto.DisplayName = dto.DisplayName?.Trim() ?? "";
+
+    if (string.IsNullOrWhiteSpace(dto.TypeCode)) return BadRequest("TypeCode required.");
+    if (string.IsNullOrWhiteSpace(dto.DisplayName)) return BadRequest("DisplayName required.");
+
 
         // Minimal insert (no validation, no statuses)
         _db.CommunicationType.Add(new CommunicationType
@@ -131,7 +164,7 @@ public class CommunicationTypeController : ControllerBase
         }
         if (string.IsNullOrWhiteSpace(dto.DisplayName))
         {
-            Console.WriteLine("❌Replace() -> 400 DisplayName required");
+            Console.WriteLine("Replace() -> 400 DisplayName required");
             return BadRequest("DisplayName is required.");
         }
         dto.AllowedStatusCodes ??= new();
@@ -166,13 +199,13 @@ public class CommunicationTypeController : ControllerBase
 
             var saved = await _db.SaveChangesAsync();
             await tx.CommitAsync();
-            Console.WriteLine($"✅ Replace() saved {saved} change(s) for '{typeCode}'");
+            Console.WriteLine($"Replace() saved {saved} change(s) for '{typeCode}'");
             return NoContent();
         }
         catch (Exception ex)
         {
             await tx.RollbackAsync();
-            Console.WriteLine($"💥 Replace() exception: {ex}");
+            Console.WriteLine($"Replace() exception: {ex}");
             return StatusCode(500, ex.Message);
         }
     }

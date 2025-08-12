@@ -51,3 +51,4 @@
 /Users/yorkmacbook082/Documents/SoloProj/zelis.ui/obj/Debug/net8.0/Zelis.UI.pdb
 /Users/yorkmacbook082/Documents/SoloProj/Zelis.UI/obj/Debug/net8.0/Zelis.UI.genruntimeconfig.cache
 /Users/yorkmacbook082/Documents/SoloProj/Zelis.UI/obj/Debug/net8.0/ref/Zelis.UI.dll
+/Users/yorkmacbook082/Documents/SoloProj/zelis.ui/obj/Debug/net8.0/Zelis.UI.sourcelink.json
